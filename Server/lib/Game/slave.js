@@ -54,7 +54,7 @@ const ENABLE_ROUND_TIME = Master.ENABLE_ROUND_TIME;
 const ENABLE_FORM = Master.ENABLE_FORM;
 const MODE_LENGTH = Master.MODE_LENGTH;
 
-JLog.info(`<< KKuTu Server:${Server.options.port} >>`);
+JLog.info(`[[ KKuTu Server:${Server.options.port} ]]`);
 
 process.on('uncaughtException', function(err){
 	var text = `:${process.env['KKUTU_PORT']} [${new Date().toLocaleString()}] ERROR: ${err.toString()}\n${err.stack}`;
@@ -102,8 +102,8 @@ MainDB.ready = function(){
 	JLog.success("DB is ready.");
 	KKuTu.init(MainDB, DIC, ROOM, GUEST_PERMISSION);
 };
-Server.on('connection', function(socket, info){
-	var chunk = info.url.slice(1).split('&');
+Server.on('connection', function(socket){
+	var chunk = socket.upgradeReq.url.slice(1).split('&');
 	var key = chunk[0];
 	var reserve = RESERVED[key] || {}, room;
 	var $c;
@@ -244,10 +244,10 @@ KKuTu.onClientMessage = function($c, msg){
 			if(stable){
 				if(msg.title.length > 20) stable = false;
 				if(msg.password.length > 20) stable = false;
-				if(msg.limit < 2 || msg.limit > 8){
+				/* if(msg.limit < 2 || msg.limit > 8){
 					msg.code = 432;
 					stable = false;
-				}
+				}*/ //혼자서 플레이가 가능하게 설정
 				if(msg.mode < 0 || msg.mode >= MODE_LENGTH) stable = false;
 				if(msg.round < 1 || msg.round > 10){
 					msg.code = 433;
